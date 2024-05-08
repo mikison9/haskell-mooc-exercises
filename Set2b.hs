@@ -136,11 +136,7 @@ countdown' n = show n ++ "... " ++ countdown' (n - 1)
 
 smallestDivisor :: Integer -> Integer
 smallestDivisor x = smallestDivisor' x 2
-
-smallestDivisor' :: Integer -> Integer -> Integer
-smallestDivisor' x y = if x `mod` y == 0
-    then y
-    else smallestDivisor' x (y + 1)
+    where smallestDivisor' x y = if x `mod` y == 0 then y else smallestDivisor' x (y + 1)
 
 ------------------------------------------------------------------------------
 -- Ex 7: implement a function isPrime that checks if the given number
