@@ -1,4 +1,4 @@
-all: set1 set2a set2b set3a set3b set4a set4b set5a set5b
+all: set1 set2a set2b set3a set3b set4a set4b set5a set5b set6
 
 set1:
     runghc Set1Test.hs
@@ -26,3 +26,6 @@ set5a:
 
 set5b:
     runghc Set5bTest.hs
+
+set6:
+    runghc Set6Test.hs
