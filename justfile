@@ -11,3 +11,6 @@ set2b:
 
 set3a:
     runghc Set3aTest.hs
+
+set3b:
+    runghc Set3bTest.hs
