@@ -1,4 +1,4 @@
-all: set1 set2a set2b set3a set3b set4a set4b set5a set5b set6 set7 set8
+all: set1 set2a set2b set3a set3b set4a set4b set5a set5b set6 set7 set8 set10a
 
 build:
     stack build
@@ -38,3 +38,6 @@ set7:
 
 set8:
     stack runghc Set8Test.hs
+
+set10a:
+    stack runghc Set10aTest.hs
