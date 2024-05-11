@@ -152,7 +152,7 @@ ask = do
 while :: IO Bool -> IO () -> IO ()
 while cond op = do
   cont <- cond
-  if not cont 
+  if not cont
     then return ()
     else do
       op
