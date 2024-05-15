@@ -93,7 +93,11 @@ checkCapitals (x : xs, y : ys) = if x == toUpper x && y == toUpper y then Just (
 --     ==> Just "a"
 
 winner :: [(String, Int)] -> String -> String -> Maybe String
-winner scores player1 player2 = todo
+winner scores player1 player2 = do
+    a <- lookup player1 scores
+    b <- lookup player2 scores
+
+    return (if b > a then player2 else player1)
 
 ------------------------------------------------------------------------------
 -- Ex 3: given a list of indices and a list of values, return the sum
