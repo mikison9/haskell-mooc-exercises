@@ -94,10 +94,10 @@ checkCapitals (x : xs, y : ys) = if x == toUpper x && y == toUpper y then Just (
 
 winner :: [(String, Int)] -> String -> String -> Maybe String
 winner scores player1 player2 = do
-    a <- lookup player1 scores
-    b <- lookup player2 scores
+  a <- lookup player1 scores
+  b <- lookup player2 scores
 
-    return (if b > a then player2 else player1)
+  return (if b > a then player2 else player1)
 
 ------------------------------------------------------------------------------
 -- Ex 3: given a list of indices and a list of values, return the sum
@@ -115,13 +115,22 @@ winner scores player1 player2 = do
 --    Nothing
 
 selectSum :: (Num a) => [a] -> [Int] -> Maybe a
-selectSum xs is = todo
+selectSum xs [] = Just 0
+selectSum xs (i : is) = do
+  val <- safeIndex xs i
+  next <- selectSum xs is
+  return (val + next)
+
+safeIndex :: [a] -> Int -> Maybe a
+safeIndex (x : xs) 0 = Just x
+safeIndex (x : xs) i = safeIndex xs (i - 1)
+safeIndex _ _ = Nothing
 
 ------------------------------------------------------------------------------
 -- Ex 4: Here is the Logger monad from the course material. Implement
 -- the operation countAndLog which produces the number of elements
--- from the given list that fulfil the given predicate. Additionally,
--- countAndLog should log all elements that fulfil the predicate
+-- from the given list that fulfill the given predicate. Additionally,
+-- countAndLog should log all elements that fulfill the predicate
 -- (using show to turn them into strings).
 --
 -- Examples:
@@ -150,7 +159,8 @@ instance Applicative Logger where
   (<*>) = ap
 
 countAndLog :: (Show a) => (a -> Bool) -> [a] -> Logger Int
-countAndLog = todo
+countAndLog _ [] = Logger [] 0
+countAndLog pred (x : xs) = countAndLog pred xs >>= (\a -> if pred x then Logger [show x] (a + 1) else Logger [] a)
 
 ------------------------------------------------------------------------------
 -- Ex 5: You can find the Bank and BankOp code from the course
@@ -167,7 +177,9 @@ exampleBank :: Bank
 exampleBank = (Bank (Map.fromList [("harry", 10), ("cedric", 7), ("ginny", 1)]))
 
 balance :: String -> BankOp Int
-balance accountName = todo
+balance accountName = BankOp f
+  where
+    f (Bank b) = (Map.findWithDefault 0 accountName b, Bank b)
 
 ------------------------------------------------------------------------------
 -- Ex 6: Using the operations balance, withdrawOp and depositOp, and
@@ -185,7 +197,7 @@ balance accountName = todo
 --     ==> ((),Bank (fromList [("cedric",7),("ginny",1),("harry",10)]))
 
 rob :: String -> String -> BankOp ()
-rob from to = todo
+rob from to = balance from +> withdrawOp from +> depositOp to
 
 ------------------------------------------------------------------------------
 -- Ex 7: using the State monad, write the operation `update` that first
@@ -197,7 +209,7 @@ rob from to = todo
 --    ==> ((),7)
 
 update :: State Int ()
-update = todo
+update = modify (\x -> (x * 2) + 1)
 
 ------------------------------------------------------------------------------
 -- Ex 8: Checking that parentheses are balanced with the State monad.
@@ -225,7 +237,13 @@ update = todo
 --   parensMatch "(()))("      ==> False
 
 paren :: Char -> State Int ()
-paren = todo
+paren ch = modify f
+  where
+    f x
+      | x < 0 = x
+      | ch == '(' = x + 1
+      | ch == ')' = x - 1
+      | otherwise = x
 
 parensMatch :: String -> Bool
 parensMatch s = count == 0
@@ -257,7 +275,11 @@ parensMatch s = count == 0
 -- PS. The order of the list of pairs doesn't matter
 
 count :: (Eq a) => a -> State [(a, Int)] ()
-count x = todo
+count x = modify f
+  where
+    f s = case lookup x s of
+      Nothing -> s ++ [(x, 1)]
+      Just _ -> map (\(k, v) -> if k == x then (k, v + 1) else (k, v)) s
 
 ------------------------------------------------------------------------------
 -- Ex 10: Implement the operation occurrences, which
@@ -279,4 +301,8 @@ count x = todo
 --    ==> (4,[(2,1),(3,1),(4,1),(7,1)])
 
 occurrences :: (Eq a) => [a] -> State [(a, Int)] Int
-occurrences xs = todo
+occurrences [] = return 0
+occurrences (x : xs) = do
+  cont <- occurrences xs >> get
+  let (_, l) = runState (count x) cont
+  put l >> return (length l)
